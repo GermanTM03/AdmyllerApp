@@ -1,0 +1,50 @@
+export const EmployesData = [
+    {
+        id: 1, 
+        name: 'John Doe', 
+        position: 'Software Engineer', 
+        area: 'Development',
+        birthDate: '1990-01-01',
+        gender: 'Male',
+        address: '123 Main St',
+        country: 'USA',
+        city: 'New York',
+        email: 'john.doe@example.com',
+        phoneNumber: '123-456-7890',
+        salary: 75000,
+        startDate: '2020-06-01',
+        password: 'password123'
+    },
+    {
+        id: 2, 
+        name: 'Jane Smith', 
+        position: 'Sales Manager', 
+        area: 'Sales',
+        birthDate: '1985-05-15',
+        gender: 'Female',
+        address: '456 Elm St',
+        country: 'USA',
+        city: 'Chicago',
+        email: 'jane.smith@example.com',
+        phoneNumber: '234-567-8901',
+        salary: 85000,
+        startDate: '2018-09-15',
+        password: 'password456'
+    },
+    {
+        id: 3, 
+        name: 'Alice Johnson', 
+        position: 'Marketing Specialist', 
+        area: 'Marketing',
+        birthDate: '1992-07-20',
+        gender: 'Female',
+        address: '789 Pine St',
+        country: 'USA',
+        city: 'San Francisco',
+        email: 'alice.johnson@example.com',
+        phoneNumber: '345-678-9012',
+        salary: 65000,
+        startDate: '2021-02-20',
+        password: 'password789'
+    }
+    ];
