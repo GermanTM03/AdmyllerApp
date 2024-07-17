@@ -1,17 +1,18 @@
 'use client'
-import Link from 'next/link'
-import Image from 'next/image'
-import React, { useState } from 'react'
-import { TextInput } from '@tremor/react'
-import { ChevronLeftIcon } from '@heroicons/react/24/outline'
-import { Controller, useForm } from 'react-hook-form'
-import { IUser } from '@/src/interfaces/user'
-import { useRouter } from 'next/navigation' 
+import Link from 'next/link';
+import Image from 'next/image';
+import React, { useState } from 'react';
+import { TextInput } from '@tremor/react';
+import { ChevronLeftIcon } from '@heroicons/react/24/outline';
+import { Controller, useForm } from 'react-hook-form';
+import { IUser } from '@/src/interfaces/user';
+import { useRouter } from 'next/navigation';
+import { GoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
 
 const Page = () => {
     const router = useRouter();
     const [serverErrors, setServerErrors] = useState<{ [key: string]: string }>({});
-
     const { handleSubmit, control, reset, formState: { errors } } = useForm<IUser>({
         defaultValues: {
             name: '',
@@ -21,8 +22,7 @@ const Page = () => {
     });
 
     const formHandler = async (data: IUser) => {
-        setServerErrors({}); 
-        console.log('Form Data:', data);
+        setServerErrors({});
         try {
             const response = await fetch('https://localhost:7208/api/Users/SignUp', {
                 method: 'POST',
@@ -36,17 +36,12 @@ const Page = () => {
                 }),
             });
 
-            console.log('Response:', response);
-
             if (response.ok) {
-                const result = await response.json();
-                console.log('Result:', result);
                 reset();
-                alert("Te haz registrado correctamente")
-                router.push('/login'); 
+                alert("Te has registrado correctamente");
+                router.push('/login');
             } else {
                 const error = await response.json();
-                console.log('Error:', error);
                 if (error.error && error.error.includes('correo electrónico ya está en uso')) {
                     setServerErrors({ email: 'El correo electrónico ya está en uso' });
                 } else {
@@ -54,10 +49,28 @@ const Page = () => {
                 }
             }
         } catch (error) {
-            console.error('Error:', error);
             setServerErrors({ general: 'Ocurrió un error al crear la cuenta' });
         }
-    }
+    };
+
+    const handleGoogleLoginSuccess = async (response: any) => {
+        const tokenId = response.credential;
+        try {
+            const result = await axios.post('https://localhost:7208/api/Auth/GoogleResponse', {
+                tokenId: tokenId
+            });
+            alert('Registro exitoso con Google');
+            router.push('/login');
+        } catch (error) {
+            console.error('Login Error:', error);
+            setServerErrors({ general: 'Error al registrarse con Google.' });
+        }
+    };
+
+    const handleGoogleLoginFailure = (response: any) => {
+        console.error('Login Failed:', response);
+        setServerErrors({ general: 'Error al registrarse con Google.' });
+    };
 
     return (
         <section className='h-screen'>
@@ -73,7 +86,7 @@ const Page = () => {
                         </div>
                         <h1 className='text-2xl mb-4'>Crear cuenta</h1>
                         <p className='mb-4'>
-                            ¡Ingresa tus datos, registrate y comienza con la experiencia Admyller!
+                            ¡Ingresa tus datos, regístrate y comienza con la experiencia Admyller!
                         </p>
                         <div className='flex flex-col gap-1 mb-4'>
                             <label htmlFor="">Nombre:</label>
@@ -139,6 +152,12 @@ const Page = () => {
                             Crear cuenta
                         </button>
                     </form>
+                    <div className='mt-4'>
+                        <GoogleLogin
+                            onSuccess={handleGoogleLoginSuccess}
+                            onError={handleGoogleLoginFailure}
+                        />
+                    </div>
                 </div>
                 <div className='overflow-hidden col-span-1 h-svh'>
                     <img className='hover:scale-110 duration-150 w-full h-full object-cover object-right'
@@ -147,7 +166,7 @@ const Page = () => {
                 </div>
             </div>
         </section>
-    )
+    );
 }
 
 export default Page;

@@ -7,7 +7,8 @@ import Link from 'next/link';
 import { Controller, useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import Loading from '../../Actions/Loading'; // Importar el componente de carga
-
+import { GoogleLogin } from '@react-oauth/google'; // Importar GoogleLogin
+import axios from 'axios';
 
 const Page = () => {
     const { handleSubmit, control, formState: { errors } } = useForm({
@@ -16,7 +17,6 @@ const Page = () => {
             password: ''
         }
     });
-
     const [error, setError] = useState<string | null>(null); // Estado para manejar errores de autenticación
     const [tokenChecked, setTokenChecked] = useState(false); // Estado para controlar si se ha verificado el token
 
@@ -30,7 +30,6 @@ const Page = () => {
                 setTokenChecked(true);
             }
         };
-
         checkToken();
     }, []);
 
@@ -49,21 +48,37 @@ const Page = () => {
             }
 
             const responseData = await response.json();
-            const { token } = responseData; // Suponiendo que el token JWT está en la propiedad 'token' de la respuesta
+            const { token } = responseData; 
 
-            // Almacenar el token en localStorage
             localStorage.setItem('token', token);
-
-            // Redirigir al usuario al dashboard
             window.location.href = '/dashboard';
 
         } catch (err: any) {
-            setError(err.message); // Captura el mensaje de error si la autenticación falla
+            setError(err.message);
         }
     };
 
+    const handleGoogleLoginSuccess = async (response: any) => {
+        const tokenId = response.credential;
+        try {
+            const result = await axios.post('https://localhost:7208/api/Auth/GoogleResponse', {
+                tokenId: tokenId
+            });
+            const { token } = result.data; // Suponiendo que la respuesta incluye el token
+            localStorage.setItem('token', token);
+            window.location.href = '/dashboard';
+        } catch (error) {
+            console.error('Login Error:', error);
+            setError('Error al iniciar sesión con Google.');
+        }
+    };
+
+    const handleGoogleLoginFailure = (response: any) => {
+        console.error('Login Failed:', response);
+        setError('Error al iniciar sesión con Google.');
+    };
+
     if (!tokenChecked) {
-        // Mostrar un loader o un mensaje de carga mientras se verifica el token
         return <Loading />;
     }
 
@@ -132,6 +147,12 @@ const Page = () => {
                         </button>
                         {error && <span className='text-sm text-red-500 mt-2'>{error}</span>}
                     </form>
+                    <div className='mt-4'>
+                        <GoogleLogin
+                            onSuccess={handleGoogleLoginSuccess}
+                            onError={handleGoogleLoginFailure}
+                        />
+                    </div>
                 </div>
             </div>
         </section>
