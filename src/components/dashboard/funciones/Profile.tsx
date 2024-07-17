@@ -1,88 +1,80 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 
-interface Branch {
-    branchId: number;
-    businessName: string;
-    address: string;
-    rfc: string;
-    email: string;
-    phoneNumber: string;
-    userId: number;
+interface UserProfile {
+  userId: number;
+  fullName: string;
+  email: string;
 }
 
 interface ApiResponse {
-    value: Branch[];
+  value: UserProfile;
 }
 
-const Dashboard = () => {
-    const [branches, setBranches] = useState<Branch[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+const UserProfile = () => {
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const fetchBranches = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                console.log('Bearer Token:', token);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        console.log('Bearer Token:', token);
 
-                const response = await fetch('https://localhost:7208/api/Branchs/Branchs', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
+        const response = await fetch('https://localhost:7208/api/Users/ProfileUser', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(`Error ${response.status}: ${errorData.message || 'No autorizado'}`);
-                }
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(`Error ${response.status}: ${errorData.message || 'No autorizado'}`);
+        }
 
-                const data: ApiResponse = await response.json();
-                console.log('Data recibida:', data);
-                setBranches(data.value);
-            } catch (error: unknown) {
-                if (error instanceof Error) {
-                    setError(error.message);
-                } else {
-                    setError('Error desconocido');
-                }
-            } finally {
-                setLoading(false);
-            }
-        };
+        const data: ApiResponse = await response.json();
+        console.log('Data recibida:', data);
 
-        fetchBranches();
-    }, []);
+        setProfile(data.value);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          setError(error.message);
+        } else {
+          setError('Error desconocido');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if (loading) {
-        return <div>Cargando...</div>;
-    }
+    fetchProfile();
+  }, []);
 
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
 
-    return (
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  return (
+    <div>
+      <h1>Mi Perfil</h1>
+      {profile ? (
         <div>
-            <h1>Mis Sucursales</h1>
-            <ul className="list-disc pl-5">
-                {branches.map(branch => (
-                    <li key={branch.branchId}>
-                        <Link href={`/sucursal/${branch.branchId}`} className="text-blue-600 hover:underline">
-                            {branch.businessName}
-                        </Link>
-                        <p>Dirección: {branch.address}</p>
-                        <p>Email: {branch.email}</p>
-                        <p>Teléfono: {branch.phoneNumber}</p>
-                    </li>
-                ))}
-            </ul>
+          <p>Nombre Completo: {profile.fullName}</p>
+          <p>Email: {profile.email}</p>
         </div>
-    );
+      ) : (
+        <p>No se encontró información del perfil.</p>
+      )}
+    </div>
+  );
 };
 
-export default Dashboard;
+export default UserProfile;

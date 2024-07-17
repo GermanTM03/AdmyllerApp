@@ -24,7 +24,7 @@ const Page = () => {
         setServerErrors({}); 
         console.log('Form Data:', data);
         try {
-            const response = await fetch('https://localhost:7208/api/Auth/SingUp', {
+            const response = await fetch('https://localhost:7208/api/Users/SignUp', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
