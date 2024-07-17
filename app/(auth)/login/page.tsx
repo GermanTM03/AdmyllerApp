@@ -6,6 +6,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Controller, useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
+import Loading from '../../Actions/Loading'; // Importar el componente de carga
+
 
 const Page = () => {
     const { handleSubmit, control, formState: { errors } } = useForm({
@@ -62,7 +64,7 @@ const Page = () => {
 
     if (!tokenChecked) {
         // Mostrar un loader o un mensaje de carga mientras se verifica el token
-        return <div>Cargando...</div>;
+        return <Loading />;
     }
 
     return (

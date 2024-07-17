@@ -14,36 +14,7 @@ export const MENU_ITEMS = [
         route: "/dashboard",
         icon: HomeIcon
     },
-    {
-        id: 2,
-        label: "Inventario",
-        route: "/inventory",
-        icon: ClipboardDocumentListIcon
-    },
-    {
-        id: 3,
-        label: "Reportes",
-        route: "/orders",
-        icon: ChartPieIcon
-    },
-    {
-        id: 4,
-        label: "Ventas",
-        route: "/sales",
-        icon: ChartBarSquareIcon
-    },
-    {
-        id: 5,
-        label: "Citas",
-        route: "/quotes",
-        icon: CalendarDaysIcon
-    },
-    {
-        id: 6,
-        label: "Empleados",
-        route: "/employees",
-        icon: UserGroupIcon
-    },
+
 ]
 
 export const BOTTOM_MENU_ITEMS = [

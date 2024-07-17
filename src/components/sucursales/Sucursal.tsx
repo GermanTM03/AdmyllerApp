@@ -14,21 +14,21 @@ interface Branch {
 }
 
 interface ApiResponse {
-    value: Branch[];
+    value: Branch; // Cambiado a un solo objeto
 }
 
-const Dashboard = () => {
-    const [branches, setBranches] = useState<Branch[]>([]);
+const Sucursal = () => {
+    const [branch, setBranch] = useState<Branch | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchBranches = async () => {
+        const fetchBranch = async () => {
             try {
                 const token = localStorage.getItem('token');
                 console.log('Bearer Token:', token);
 
-                const response = await fetch('https://localhost:7208/api/Branchs/Branchs', {
+                const response = await fetch('https://localhost:7208/api/Branchs/Branch/1', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -43,7 +43,7 @@ const Dashboard = () => {
 
                 const data: ApiResponse = await response.json();
                 console.log('Data recibida:', data);
-                setBranches(data.value);
+                setBranch(data.value); // Aquí establecemos el objeto de sucursal
             } catch (error: unknown) {
                 if (error instanceof Error) {
                     setError(error.message);
@@ -55,7 +55,7 @@ const Dashboard = () => {
             }
         };
 
-        fetchBranches();
+        fetchBranch();
     }, []);
 
     if (loading) {
@@ -68,21 +68,19 @@ const Dashboard = () => {
 
     return (
         <div>
-            <h1>Mis Sucursales</h1>
-            <ul className="list-disc pl-5">
-                {branches.map(branch => (
-                    <li key={branch.branchId}>
-                        <Link href={`/sucursal/${branch.branchId}`} className="text-blue-600 hover:underline">
-                            {branch.businessName}
-                        </Link>
-                        <p>Dirección: {branch.address}</p>
-                        <p>Email: {branch.email}</p>
-                        <p>Teléfono: {branch.phoneNumber}</p>
-                    </li>
-                ))}
-            </ul>
+            <h1>Detalles de la Sucursal</h1>
+            {branch && (
+                <div>
+                    <h2>{branch.businessName}</h2>
+                    <p>Dirección: {branch.address}</p>
+                    <p>RFC: {branch.rfc}</p>
+                    <p>Email: {branch.email}</p>
+                    <p>Teléfono: {branch.phoneNumber}</p>
+                </div>
+                
+            )}
         </div>
     );
 };
 
-export default Dashboard;
+export default Sucursal;
