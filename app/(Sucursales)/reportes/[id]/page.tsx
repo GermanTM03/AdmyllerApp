@@ -2,11 +2,12 @@
 "use client";
 
 import { useParams } from 'next/navigation';
-import AddReports from '@/src/components/sucursales/funciones/AddReports';
+import AddReports from '@/src/components/sucursales/reportes/AddReports';
+import ViewReports from '@/src/components/sucursales/reportes/ViewReports';
 import React from 'react';
 
 const Page = () => {
-    const { id } = useParams();
+    const { id } = useParams<{ id: string }>(); // Asegurar que id sea una cadena de texto
 
     if (!id) {
         return <div>Cargando...</div>;
@@ -16,6 +17,8 @@ const Page = () => {
         <div>
             Holamundo
             <AddReports id ={id} />
+            <ViewReports id ={id} />
+
         </div>
         // <SucursalEdit id ={id} />
     );

@@ -28,7 +28,6 @@ export default function RootLayout({
                         <Navbar />
                         <div className="container mx-auto">
                             {children}
-                            <h1>Sucursal</h1>
                         </div>
                     </main>
                 </ThemeContext>

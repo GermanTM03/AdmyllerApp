@@ -2,11 +2,11 @@
 "use client";
 
 import { useParams } from 'next/navigation';
-import Inventario from '@/src/components/sucursales/funciones/inventario';
+import Inventario from '@/src/components/sucursales/inventario/Inventario';
 import React from 'react';
 
 const Page = () => {
-    const { id } = useParams();
+    const { id } = useParams<{ id: string }>(); // Asegurar que id sea una cadena de texto
 
     if (!id) {
         return <div>Cargando...</div>;

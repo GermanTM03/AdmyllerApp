@@ -2,11 +2,12 @@
 "use client";
 
 import { useParams } from 'next/navigation';
-import Inventario from '@/src/components/sucursales/funciones/inventario';
+import AddCitas from '@/src/components/sucursales/citas/AddCitas';
+import Citas from '@/src/components/sucursales/citas/Citas';
 import React from 'react';
 
 const Page = () => {
-    const { id } = useParams();
+    const { id } = useParams() as { id: string };
 
     if (!id) {
         return <div>Cargando...</div>;
@@ -14,11 +15,11 @@ const Page = () => {
 
     return (
         <div>
-            Holamundo
-            <Inventario id ={id} />
+            <AddCitas id={id} />
+            <Citas id={id} />
         </div>
-        // <SucursalEdit id ={id} />
     );
 }
+
 
 export default Page;
