@@ -2,7 +2,7 @@
 "use client";
 
 import { useParams } from 'next/navigation';
-import SucursalEdit from '@/src/components/sucursales/funciones/SucursalEdit';
+import Inventario from '@/src/components/sucursales/funciones/inventario';
 import React from 'react';
 
 const Page = () => {
@@ -13,7 +13,11 @@ const Page = () => {
     }
 
     return (
-        <SucursalEdit id ={id} />
+        <div>
+            Holamundo
+            <Inventario id ={id} />
+        </div>
+        // <SucursalEdit id ={id} />
     );
 }
 

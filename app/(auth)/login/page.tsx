@@ -73,8 +73,8 @@ const Page = () => {
         }
     };
 
-    const handleGoogleLoginFailure = (response: any) => {
-        console.error('Login Failed:', response);
+    const handleGoogleLoginFailure = () => {
+        console.error('Login Failed');
         setError('Error al iniciar sesión con Google.');
     };
 

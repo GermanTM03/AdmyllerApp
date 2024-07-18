@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import Link from 'next/link';
+import Swal from 'sweetalert2';
 
 interface Branch {
     branchId: number;
@@ -16,7 +16,6 @@ interface Branch {
 const AddBranch = () => {
     const [newBranch, setNewBranch] = useState<Partial<Branch>>({});
     const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,7 +23,27 @@ const AddBranch = () => {
         setNewBranch((prev) => ({ ...prev, [name]: value }));
     };
 
+    const validateInputs = (): boolean => {
+        if (!newBranch.businessName || !newBranch.address || !newBranch.rfc || !newBranch.email || !newBranch.phoneNumber) {
+            setError('Todos los campos son obligatorios.');
+            return false;
+        }
+
+        const phoneRegex = /^[0-9]+$/;
+        if (!phoneRegex.test(newBranch.phoneNumber)) {
+            setError('El número de teléfono solo debe contener números.');
+            return false;
+        }
+
+        setError(null);
+        return true;
+    };
+
     const handleAddBranch = async () => {
+        if (!validateInputs()) {
+            return;
+        }
+
         try {
             const token = localStorage.getItem('token');
 
@@ -42,8 +61,20 @@ const AddBranch = () => {
                 throw new Error(`Error ${response.status}: ${errorData.message || 'Error al agregar sucursal'}`);
             }
 
-            setSuccess('Sucursal añadida con éxito.');
+            Swal.fire({
+                icon: 'success',
+                title: 'Sucursal añadida con éxito',
+                showConfirmButton: false,
+                timer: 1500
+            });
+
             setNewBranch({});
+            setIsModalOpen(false);
+
+            // Refrescar la página después de un breve retraso
+            setTimeout(() => {
+                window.location.reload();
+            }, 1500);
         } catch (error: unknown) {
             if (error instanceof Error) {
                 setError(error.message);
@@ -67,7 +98,7 @@ const AddBranch = () => {
                         <input type="text" name="address" placeholder="Dirección" onChange={handleInputChange} />
                         <input type="text" name="rfc" placeholder="RFC" onChange={handleInputChange} />
                         <input type="email" name="email" placeholder="Email" onChange={handleInputChange} />
-                        <input type="tel" name="phoneNumber" placeholder="Teléfono" onChange={handleInputChange} />
+                        <input type="number" name="phoneNumber" placeholder="Teléfono" onChange={handleInputChange} />
 
                         <button onClick={handleAddBranch} className="bg-green-600 text-white p-2 rounded">
                             Guardar
@@ -77,7 +108,6 @@ const AddBranch = () => {
                         </button>
 
                         {error && <div className="text-red-600">{error}</div>}
-                        {success && <div className="text-green-600">{success}</div>}
                     </div>
                 </div>
             )}

@@ -1,7 +1,7 @@
+// src/components/sucursales/Sucursal.tsx
 "use client";
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 
 interface Branch {
     branchId: number;
@@ -9,15 +9,19 @@ interface Branch {
     address: string;
     rfc: string;
     email: string;
-    phoneNumber: string;
+    phoneNumber: number;
     userId: number;
 }
 
 interface ApiResponse {
-    value: Branch; // Cambiado a un solo objeto
+    value: Branch; 
 }
 
-const Sucursal = () => {
+interface SucursalProps {
+    id: string; // Agrega la prop id
+}
+
+const Sucursal = ({ id }: SucursalProps) => {
     const [branch, setBranch] = useState<Branch | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -26,9 +30,7 @@ const Sucursal = () => {
         const fetchBranch = async () => {
             try {
                 const token = localStorage.getItem('token');
-                console.log('Bearer Token:', token);
-
-                const response = await fetch('https://localhost:7208/api/Branchs/Branch/1', {
+                const response = await fetch(`https://localhost:7208/api/Branchs/Branch/${id}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -42,8 +44,7 @@ const Sucursal = () => {
                 }
 
                 const data: ApiResponse = await response.json();
-                console.log('Data recibida:', data);
-                setBranch(data.value); // Aquí establecemos el objeto de sucursal
+                setBranch(data.value);
             } catch (error: unknown) {
                 if (error instanceof Error) {
                     setError(error.message);
@@ -56,7 +57,7 @@ const Sucursal = () => {
         };
 
         fetchBranch();
-    }, []);
+    }, [id]); // Cambia a usar la prop id
 
     if (loading) {
         return <div>Cargando...</div>;
@@ -77,7 +78,6 @@ const Sucursal = () => {
                     <p>Email: {branch.email}</p>
                     <p>Teléfono: {branch.phoneNumber}</p>
                 </div>
-                
             )}
         </div>
     );

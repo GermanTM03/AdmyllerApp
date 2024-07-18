@@ -13,6 +13,8 @@ import axios from 'axios';
 const Page = () => {
     const router = useRouter();
     const [serverErrors, setServerErrors] = useState<{ [key: string]: string }>({});
+    const [error, setError] = useState<string | null>(null); // Estado para manejar errores de autenticación
+
     const { handleSubmit, control, reset, formState: { errors } } = useForm<IUser>({
         defaultValues: {
             name: '',
@@ -22,6 +24,30 @@ const Page = () => {
     });
 
     const formHandler = async (data: IUser) => {
+        const formHandler = async (data: { email: string, password: string }) => {
+            try {
+                const response = await fetch('https://localhost:7208/api/Auth/Login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Error al iniciar sesión. Por favor, verifica tus credenciales.');
+                }
+    
+                const responseData = await response.json();
+                const { token } = responseData; 
+    
+                localStorage.setItem('token', token);
+                window.location.href = '/dashboard';
+    
+            } catch (err: any) {
+                setError(err.message);
+            }
+        };
         setServerErrors({});
         try {
             const response = await fetch('https://localhost:7208/api/Users/SignUp', {
@@ -53,22 +79,24 @@ const Page = () => {
         }
     };
 
+
     const handleGoogleLoginSuccess = async (response: any) => {
         const tokenId = response.credential;
         try {
             const result = await axios.post('https://localhost:7208/api/Auth/GoogleResponse', {
                 tokenId: tokenId
             });
-            alert('Registro exitoso con Google');
-            router.push('/login');
+            const { token } = result.data; // Suponiendo que la respuesta incluye el token
+            localStorage.setItem('token', token);
+            window.location.href = '/dashboard';
         } catch (error) {
             console.error('Login Error:', error);
-            setServerErrors({ general: 'Error al registrarse con Google.' });
+            setError('Error al iniciar sesión con Google.');
         }
     };
 
-    const handleGoogleLoginFailure = (response: any) => {
-        console.error('Login Failed:', response);
+    const handleGoogleLoginFailure = () => { // Cambié aquí
+        console.error('Login Failed');
         setServerErrors({ general: 'Error al registrarse con Google.' });
     };
 
